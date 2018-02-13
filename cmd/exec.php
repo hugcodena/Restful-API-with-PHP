@@ -1,0 +1,36 @@
+<?
+class ExecSQL {
+    private $conn;
+
+    public function __construct($db){
+        $this->conn = $db;
+    }
+  
+    public function readAll($table_name){
+		$stmt = $this->conn->prepare(" SELECT * FROM ".$table_name);
+		$stmt->execute();
+		return $stmt;
+    }
+
+    public function rowCount($table_name){
+        $stmt = $this->conn->prepare( " SELECT
+                                            COUNT(*) as total_rows
+                                        FROM ".$table_name );
+        $stmt->execute();
+        $rows = $stmt->fetch(PDO::FETCH_ASSOC);
+        return $rows['total_rows'];
+    }
+
+    public function insert($table_name, $fields, $value){
+        $stmt = $this->conn->prepare(" INSERT INTO $table_name ($fields) VALUES ($value) ");
+        return $this->exeCMD($stmt);
+    }
+
+    public function exeCMD($stmt){
+        if($stmt->execute()){
+            return true;
+        } else { return false; }
+    }
+
+}
+?>
